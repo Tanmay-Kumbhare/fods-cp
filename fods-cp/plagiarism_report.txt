@@ -1,0 +1,27 @@
+PLAGIARISM DETECTION REPORT
+===========================
+
+Analysis Date: Sep 24 2025
+Target Document: target_paper.txt
+
+REFERENCE DOCUMENTS:
+1. research_paper1.txt
+2. research_paper2.txt
+3. (null)
+4. (null)
+
+DETAILED RESULTS:
+-----------------
+Reference 1: research_paper1.txt
+Similarity Score: 0.62%
+
+Reference 2: research_paper2.txt
+Similarity Score: 0.63%
+
+Reference 3: (null)
+Similarity Score: 0.00%
+
+Reference 4: (null)
+Similarity Score: 0.00%
+
+OVERALL PLAGIARISM PERCENTAGE: 0.31%

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <math.h>
 
 // Maximum sizes for various elements
 #define MAX_WORD_LENGTH 100
@@ -10,13 +11,14 @@
 #define MAX_STOPWORDS 1000
 #define MAX_KGRAMS 5000
 #define MAX_KGRAM_LENGTH 500
+#define MAX_REFERENCE_PAPERS 10
 #define HASH_TABLE_SIZE 10007  // Prime number for better distribution
 
 // Structure to store tokens
 typedef struct {
     char** tokens;
     int count;
-} TokenList;
+} TokenList; 
 
 // Structure for k-grams
 typedef struct {
@@ -49,6 +51,15 @@ typedef struct {
     int stopwords_count;
 } DocumentReader;
 
+// PlagiarismChecker class equivalent in C
+typedef struct {
+    DocumentReader* target_doc;
+    DocumentReader* reference_docs[MAX_REFERENCE_PAPERS];
+    int reference_count;
+    float similarity_scores[MAX_REFERENCE_PAPERS];
+    float overall_similarity;
+} PlagiarismChecker;
+
 // Function prototypes - Member 1
 DocumentReader* create_document_reader();
 void load_stopwords(DocumentReader* reader, const char* stopwords_file);
@@ -73,39 +84,102 @@ void print_hash_table_stats(HashTable* ht);
 void free_hash_table(HashTable* ht);
 void export_kgrams(DocumentReader* reader, const char* filename);
 
+// Function prototypes - Member 3
+PlagiarismChecker* create_plagiarism_checker();
+void add_target_document(PlagiarismChecker* checker, DocumentReader* target);
+void add_reference_document(PlagiarismChecker* checker, DocumentReader* reference);
+float calculate_jaccard_similarity(HashTable* set1, HashTable* set2);
+float calculate_cosine_similarity(HashTable* set1, HashTable* set2);
+int hash_table_intersection_count(HashTable* set1, HashTable* set2);
+int hash_table_union_count(HashTable* set1, HashTable* set2);
+void compare_documents(PlagiarismChecker* checker, int k_value);
+void print_comparison_results(PlagiarismChecker* checker);
+void export_results(PlagiarismChecker* checker, const char* filename);
+void free_plagiarism_checker(PlagiarismChecker* checker);
+
 int main() {
-    // Create document reader
-    DocumentReader* reader = create_document_reader();
+    printf("=== PLAGIARISM DETECTION SYSTEM ===\n\n");
     
-    // Load stopwords (assuming you have a stopwords.txt file)
-    load_stopwords(reader, "stopwords.txt");
+    // Create document readers for all papers
+    DocumentReader* target_reader = create_document_reader();
+    DocumentReader* ref_reader1 = create_document_reader();
+    DocumentReader* ref_reader2 = create_document_reader();
+    DocumentReader* ref_reader3 = create_document_reader();
+    DocumentReader* ref_reader4 = create_document_reader();
     
-    // Read and preprocess document
-    read_document(reader, "research_paper1.txt");
-    preprocess_text(reader);
+    // Load stopwords
+    load_stopwords(target_reader, "stopwords.txt");
+    load_stopwords(ref_reader1, "stopwords.txt");
+    load_stopwords(ref_reader2, "stopwords.txt");
+    load_stopwords(ref_reader3, "stopwords.txt");
+    load_stopwords(ref_reader4, "stopwords.txt");
     
-    // Print tokens (for testing)
-    printf("Processed tokens:\n");
-    print_tokens(reader);
+    // Read and preprocess target document
+    printf("1. PROCESSING TARGET DOCUMENT:\n");
+    read_document(target_reader, "target_paper.txt");
+    preprocess_text(target_reader);
+    generate_kgrams(target_reader, 3);
+    printf("Target document processed: %d tokens, %d k-grams\n\n", 
+           target_reader->token_list.count, target_reader->kgram_list.count);
     
-    // Export tokens for other team members
-    export_tokens(reader, "processed_tokens.txt");
+    // Read and preprocess reference documents
+    printf("2. PROCESSING REFERENCE DOCUMENTS:\n");
     
-    // MEMBER 2: Generate k-grams (e.g., 3-word sequences)
-    generate_kgrams(reader, 3);
+    printf("Reference 1: ");
+    read_document(ref_reader1, "research_paper1.txt");
+    preprocess_text(ref_reader1);
+    generate_kgrams(ref_reader1, 3);
+    printf("Paper 1: %d tokens, %d k-grams\n", 
+           ref_reader1->token_list.count, ref_reader1->kgram_list.count);
     
-    // Print k-grams
-    printf("\nGenerated k-grams (k=%d):\n", reader->kgram_list.k_value);
-    print_kgrams(reader);
+    printf("Reference 2: ");
+    read_document(ref_reader2, "research_paper2.txt");
+    preprocess_text(ref_reader2);
+    generate_kgrams(ref_reader2, 3);
+    printf("Paper 2: %d tokens, %d k-grams\n", 
+           ref_reader2->token_list.count, ref_reader2->kgram_list.count);
     
-    // Print hash table statistics
-    print_hash_table_stats(reader->kgram_hash);
+    printf("Reference 3: ");
+    read_document(ref_reader3, "research_paper3.txt");
+    preprocess_text(ref_reader3);
+    generate_kgrams(ref_reader3, 3);
+    printf("Paper 3: %d tokens, %d k-grams\n", 
+           ref_reader3->token_list.count, ref_reader3->kgram_list.count);
     
-    // Export k-grams for Member 3
-    export_kgrams(reader, "kgrams_output.txt");
+    printf("Reference 4: ");
+    read_document(ref_reader4, "research_paper4.txt");
+    preprocess_text(ref_reader4);
+    generate_kgrams(ref_reader4, 3);
+    printf("Paper 4: %d tokens, %d k-grams\n\n", 
+           ref_reader4->token_list.count, ref_reader4->kgram_list.count);
+    
+    // MEMBER 3: Create plagiarism checker and perform comparison
+    printf("3. PLAGIARISM ANALYSIS:\n");
+    PlagiarismChecker* checker = create_plagiarism_checker();
+    
+    // Add documents to checker
+    add_target_document(checker, target_reader);
+    add_reference_document(checker, ref_reader1);
+    add_reference_document(checker, ref_reader2);
+    add_reference_document(checker, ref_reader3);
+    add_reference_document(checker, ref_reader4);
+    
+    // Perform comparison with k=3 (3-word sequences)
+    compare_documents(checker, 3);
+    
+    // Display results
+    print_comparison_results(checker);
+    
+    // Export results
+    export_results(checker, "plagiarism_report.txt");
     
     // Clean up
-    free_document_reader(reader);
+    free_plagiarism_checker(checker);
+    free_document_reader(target_reader);
+    free_document_reader(ref_reader1);
+    free_document_reader(ref_reader2);
+    free_document_reader(ref_reader3);
+    free_document_reader(ref_reader4);
     
     return 0;
 }
@@ -323,7 +397,7 @@ void export_tokens(DocumentReader* reader, const char* filename) {
     printf("Tokens exported to %s\n", filename);
 }
 
-// ==================== MEMBER 2 FUNCTIONS (NEW) ====================
+// ==================== MEMBER 2 FUNCTIONS (EXISTING) ====================
 
 // Generate k-grams using sliding window technique
 void generate_kgrams(DocumentReader* reader, int k) {
@@ -557,7 +631,260 @@ void export_kgrams(DocumentReader* reader, const char* filename) {
     printf("K-grams exported to %s\n", filename);
 }
 
-// Free all allocated memory
+// ==================== MEMBER 3 FUNCTIONS (NEW) ====================
+
+// Create a new PlagiarismChecker instance
+PlagiarismChecker* create_plagiarism_checker() {
+    PlagiarismChecker* checker = (PlagiarismChecker*)malloc(sizeof(PlagiarismChecker));
+    if (checker == NULL) {
+        fprintf(stderr, "Memory allocation failed for PlagiarismChecker\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    checker->target_doc = NULL;
+    checker->reference_count = 0;
+    checker->overall_similarity = 0.0;
+    
+    // Initialize similarity scores to 0
+    for (int i = 0; i < MAX_REFERENCE_PAPERS; i++) {
+        checker->similarity_scores[i] = 0.0;
+        checker->reference_docs[i] = NULL;
+    }
+    
+    return checker;
+}
+
+// Add target document to checker
+void add_target_document(PlagiarismChecker* checker, DocumentReader* target) {
+    if (checker == NULL || target == NULL) return;
+    checker->target_doc = target;
+}
+
+// Add reference document to checker
+void add_reference_document(PlagiarismChecker* checker, DocumentReader* reference) {
+    if (checker == NULL || reference == NULL) return;
+    if (checker->reference_count < MAX_REFERENCE_PAPERS) {
+        checker->reference_docs[checker->reference_count] = reference;
+        checker->reference_count++;
+    }
+}
+
+// Calculate Jaccard similarity between two hash tables
+float calculate_jaccard_similarity(HashTable* set1, HashTable* set2) {
+    if (set1 == NULL || set2 == NULL || set1->count == 0 || set2->count == 0) {
+        return 0.0;
+    }
+    
+    int intersection = hash_table_intersection_count(set1, set2);
+    int union_count = hash_table_union_count(set1, set2);
+    
+    if (union_count == 0) return 0.0;
+    
+    return (float)intersection / union_count;
+}
+
+// Calculate Cosine similarity between two hash tables
+float calculate_cosine_similarity(HashTable* set1, HashTable* set2) {
+    if (set1 == NULL || set2 == NULL || set1->count == 0 || set2->count == 0) {
+        return 0.0;
+    }
+    
+    int intersection = hash_table_intersection_count(set1, set2);
+    float magnitude1 = sqrt(set1->count);
+    float magnitude2 = sqrt(set2->count);
+    
+    if (magnitude1 == 0 || magnitude2 == 0) return 0.0;
+    
+    return intersection / (magnitude1 * magnitude2);
+}
+
+// Count intersection of two hash tables
+int hash_table_intersection_count(HashTable* set1, HashTable* set2) {
+    if (set1 == NULL || set2 == NULL) return 0;
+    
+    int intersection = 0;
+    
+    // Iterate through all buckets in set1
+    for (int i = 0; i < set1->size; i++) {
+        HashNode* current = set1->table[i];
+        while (current != NULL) {
+            if (hash_table_contains(set2, current->kgram)) {
+                intersection++;
+            }
+            current = current->next;
+        }
+    }
+    
+    return intersection;
+}
+
+// Count union of two hash tables
+int hash_table_union_count(HashTable* set1, HashTable* set2) {
+    if (set1 == NULL || set2 == NULL) return 0;
+    
+    // Union = |A| + |B| - |A∩B|
+    int intersection = hash_table_intersection_count(set1, set2);
+    return set1->count + set2->count - intersection;
+}
+
+// Compare target document with all reference documents
+void compare_documents(PlagiarismChecker* checker, int k_value) {
+    if (checker == NULL || checker->target_doc == NULL) {
+        printf("Error: No target document specified\n");
+        return;
+    }
+    
+    if (checker->reference_count == 0) {
+        printf("Error: No reference documents specified\n");
+        return;
+    }
+    
+    // Ensure k-grams are generated for target document
+    if (checker->target_doc->kgram_hash == NULL || 
+        checker->target_doc->kgram_list.k_value != k_value) {
+        generate_kgrams(checker->target_doc, k_value);
+    }
+    
+    printf("Comparing documents using k=%d...\n", k_value);
+    
+    float total_similarity = 0.0;
+    
+    // Compare with each reference document
+    for (int i = 0; i < checker->reference_count; i++) {
+        if (checker->reference_docs[i] != NULL) {
+            // Ensure k-grams are generated for reference document
+            if (checker->reference_docs[i]->kgram_hash == NULL || 
+                checker->reference_docs[i]->kgram_list.k_value != k_value) {
+                generate_kgrams(checker->reference_docs[i], k_value);
+            }
+            
+            // Calculate Jaccard similarity
+            float jaccard_sim = calculate_jaccard_similarity(
+                checker->target_doc->kgram_hash, 
+                checker->reference_docs[i]->kgram_hash
+            );
+            
+            // Calculate Cosine similarity
+            float cosine_sim = calculate_cosine_similarity(
+                checker->target_doc->kgram_hash,
+                checker->reference_docs[i]->kgram_hash
+            );
+            
+            // Use weighted average (60% Jaccard + 40% Cosine)
+            checker->similarity_scores[i] = (jaccard_sim * 0.6) + (cosine_sim * 0.4);
+            total_similarity += checker->similarity_scores[i];
+            
+            printf("Comparison with %s:\n", checker->reference_docs[i]->filename);
+            printf("  Jaccard Similarity: %.2f%%\n", jaccard_sim * 100);
+            printf("  Cosine Similarity: %.2f%%\n", cosine_sim * 100);
+            printf("  Combined Similarity: %.2f%%\n\n", checker->similarity_scores[i] * 100);
+        }
+    }
+    
+    // Calculate overall similarity (average of all comparisons)
+    checker->overall_similarity = total_similarity / checker->reference_count;
+}
+
+// Print comparison results in a formatted way
+void print_comparison_results(PlagiarismChecker* checker) {
+    if (checker == NULL) return;
+    
+    printf("\n=== PLAGIARISM DETECTION RESULTS ===\n");
+    printf("Target Document: %s\n", 
+           checker->target_doc ? checker->target_doc->filename : "None");
+    printf("Number of Reference Documents: %d\n", checker->reference_count);
+    printf("K-value used: %d\n\n", 
+           checker->target_doc ? checker->target_doc->kgram_list.k_value : 0);
+    
+    printf("INDIVIDUAL COMPARISONS:\n");
+    printf("-----------------------\n");
+    
+    for (int i = 0; i < checker->reference_count; i++) {
+        if (checker->reference_docs[i] != NULL) {
+            printf("Reference %d: %s\n", i + 1, checker->reference_docs[i]->filename);
+            printf("Similarity Score: %.2f%%\n", checker->similarity_scores[i] * 100);
+            
+            // Categorize plagiarism level
+            if (checker->similarity_scores[i] >= 0.7) {
+                printf("Status: HIGH PLAGIARISM RISK! ⚠️\n");
+            } else if (checker->similarity_scores[i] >= 0.4) {
+                printf("Status: Moderate similarity\n");
+            } else if (checker->similarity_scores[i] >= 0.1) {
+                printf("Status: Low similarity\n");
+            } else {
+                printf("Status: Minimal similarity\n");
+            }
+            printf("\n");
+        }
+    }
+    
+    printf("OVERALL RESULTS:\n");
+    printf("----------------\n");
+    printf("Overall Plagiarism Percentage: %.2f%%\n", checker->overall_similarity * 100);
+    
+    // Final verdict
+    if (checker->overall_similarity >= 0.6) {
+        printf("VERDICT: HIGH PLAGIARISM DETECTED! ❌\n");
+        printf("This document shows significant similarity with reference materials.\n");
+    } else if (checker->overall_similarity >= 0.3) {
+        printf("VERDICT: MODERATE SIMILARITY ⚠️\n");
+        printf("Review recommended for potential plagiarism issues.\n");
+    } else if (checker->overall_similarity >= 0.1) {
+        printf("VERDICT: LOW SIMILARITY ✅\n");
+        printf("Document appears to be mostly original.\n");
+    } else {
+        printf("VERDICT: MINIMAL SIMILARITY ✅\n");
+        printf("Document shows high originality.\n");
+    }
+}
+
+// Export results to file
+void export_results(PlagiarismChecker* checker, const char* filename) {
+    if (checker == NULL) return;
+    
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        fprintf(stderr, "Error: Could not create file %s\n", filename);
+        return;
+    }
+    
+    fprintf(file, "PLAGIARISM DETECTION REPORT\n");
+    fprintf(file, "===========================\n\n");
+    
+    fprintf(file, "Analysis Date: %s\n", __DATE__);
+    fprintf(file, "Target Document: %s\n\n", 
+            checker->target_doc ? checker->target_doc->filename : "None");
+    
+    fprintf(file, "REFERENCE DOCUMENTS:\n");
+    for (int i = 0; i < checker->reference_count; i++) {
+        if (checker->reference_docs[i] != NULL) {
+            fprintf(file, "%d. %s\n", i + 1, checker->reference_docs[i]->filename);
+        }
+    }
+    
+    fprintf(file, "\nDETAILED RESULTS:\n");
+    fprintf(file, "-----------------\n");
+    
+    for (int i = 0; i < checker->reference_count; i++) {
+        if (checker->reference_docs[i] != NULL) {
+            fprintf(file, "Reference %d: %s\n", i + 1, checker->reference_docs[i]->filename);
+            fprintf(file, "Similarity Score: %.2f%%\n\n", checker->similarity_scores[i] * 100);
+        }
+    }
+    
+    fprintf(file, "OVERALL PLAGIARISM PERCENTAGE: %.2f%%\n", checker->overall_similarity * 100);
+    
+    fclose(file);
+    printf("Detailed report exported to %s\n", filename);
+}
+
+// Free plagiarism checker memory
+void free_plagiarism_checker(PlagiarismChecker* checker) {
+    if (checker == NULL) return;
+    free(checker);
+}
+
+// Free all allocated memory for DocumentReader
 void free_document_reader(DocumentReader* reader) {
     if (reader == NULL) return;
     

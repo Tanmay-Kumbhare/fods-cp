@@ -1,0 +1,824 @@
+AI-Powered Framework for Ingredient Recognition 
+and Nutritional Evaluation from Food Labels 
+
+ 
+
+ 
+
+Abstract 
+Recent advancements in Artificial Intelligence (AI) and Optical Character Recognition (OCR) have 
+enabled real-time analysis of packaged food labels, thereby enhancing consumer awareness and 
+supporting healthier dietary decisions. Prior research has proposed various frameworks that combine 
+text extraction with machine learning for ingredient classification and nutritional assessment [1]–[4]. 
+Building on this foundation, this work introduces a hybrid framework that integrates OCR, deep 
+learning, and user-preference modeling to deliver enriched insights into food composition, allergen 
+identification, and nutrient quality evaluation. 
+
+Keywords— Optical Character Recognition (OCR), Food Label Analysis, Ingredient Recognition, 
+Deep Learning, Allergen Detection, Nutrition Evaluation, Nutri-Score, Artificial Intelligence (AI). 
+
+1. Introduction 
+Growing public awareness of nutrition has prompted researchers to explore intelligent systems for 
+interpreting packaged food information. Lodha et al. [1] introduced NutriScan, a web-based platform 
+leveraging OCR and machine learning to categorize food ingredients based on their health impact. 
+Their model enabled high-accuracy identification of potentially harmful substances in food products. 
+Bhatlawande et al. [2] advanced this approach by integrating real-time scanning and categorization of 
+ingredients using mobile camera inputs and custom datasets for additive classification. In another 
+novel direction, Rosyadi et al. [3] utilized PaddleOCR alongside ChatGPT to extract and semantically 
+
+
+
+interpret ingredients from label images, providing user-friendly descriptions. Further enhancing 
+nutritional transparency, Shah et al. [4] presented an end-to-end system that extracts nutrition tables 
+and ingredient lists using a fine-tuned EfficientDet model, supplemented with user-specific health 
+filtering and Nutri-Score computation. 
+
+Or  
+
+The growing complexity of global food supply chains has increased the importance of transparent 
+nutritional information and trustworthy labeling. Consumers today are not merely passive recipients of 
+packaged food products; they actively seek to verify claims such as “sugar-free,” “halal-certified,” or 
+“organic.” Unfortunately, discrepancies between front-label claims and back-panel ingredient lists 
+remain common, often leading to confusion or even health risks for individuals with allergies or 
+dietary restrictions. 
+
+Optical Character Recognition (OCR) technologies, once confined to document digitization, have 
+recently emerged as powerful tools for extracting textual information from complex backgrounds such 
+as food packaging. Combined with Natural Language Processing (NLP) and Machine Learning (ML), 
+OCR systems enable automated validation of food label claims against actual ingredient lists. 
+However, despite significant progress, challenges persist. For instance, distorted text on curved 
+bottles, low-contrast printing, multilingual labeling, and deceptive marketing claims complicate 
+accurate recognition and interpretation. 
+
+Existing mobile applications, such as Yuka or MyFitnessPal, provide partial solutions by offering 
+calorie tracking or barcode scanning. Yet, these systems often lack the deeper intelligence required for 
+claim verification, allergen identification, or contextual dietary guidance. In contrast, emerging 
+research explores hybrid models that integrate OCR, deep learning, and large language models 
+(LLMs) to address these gaps. This paper contributes by reviewing such systems, comparing their 
+techniques, and synthesizing insights to guide the design of next-generation intelligent food label 
+analyzers. 
+
+ 
+
+2. Literature Review 
+     [1] NutriScan: AI-Based Ingredient Detection and Evaluation  
+ 
+Lodha et al. (2025) suggested NutriScan, an AI/ML-based web application. It employs Optical 
+Character Recognition (OCR) to recognize food ingredients and a Random Forest classifier to 
+classify recognized food ingredients as healthy, neutral, or harmful. The suggested system takes 
+raw ingredient information directly from an image of the food label when user upload or click 
+picture of a food label. It then performs post-OCR corrections and translates the ingredients into 
+health impact categories by means of domain dictionaries and additive codes. The model has a 
+classification accuracy of 91%, precision of 84.6%, and recall of 88% With a database of more 
+than 10,000 labeled ingredient entries, which is cross-referenced with global safety regulations 
+
+
+
+(FSSAI, EFSA, FDA). The model also provides personalized alerts for allergens and dietary 
+restrictions it further increases its usability.  
+  
+
+[2] A smart scanner system for ingredient categorization and identification of 
+nutritional composition in packaged food items. 
+ 
+The authors overviewed previous methods of food analysis, such as thermal imaging and nuclear 
+quadrupole resonance. they highlighted the drawbacks of existing OCR systems, including 
+barcode dependency and poor understanding of food additives. To overcome these limitations, 
+they suggested a technique based on Google's vision api and the MSER algorithm. this had a text 
+extraction accuracy of 87.88%. in addition, their ingredient categorization model, developed 
+using a novel dataset of food additives, has an accuracy of 84% and precision of 87%. users are 
+able to obtain health alerts on ingredients, recognize allergens, and compare nutrient levels with 
+daily limits. overall, this study materially enhances food label analysis tools, facilitating 
+consumers' access to timely, easy-to-understand information that supports informed food choices 
+based on comprehensive insights into food ingredients. improves food label analysis, facilitating 
+consumers' access to useful information for informed food choices.extraction accuracy of 
+87.88%. In addition, their ingredient categorization model, constructed using a proprietary dataset 
+of food additives, realizes 84% accuracy and 87% precision. This enables users to get health 
+alerts on ingredients, detect allergens, and compare nutrient content to daily limits. 
+  
+
+[3] Ingredients Identification Through Label Scanning Using PaddleOCR and 
+ChatGPT for Information Retrieval   
+ 
+ In their paper, the authors introduced GiziLens, a web-based tool that integrates PaddleOCR and 
+ChatGPT to recognize and extract information on food ingredients directly from packaging 
+labels.Rather than using barcodes, this tool operates directly on images of packaging labels, 
+extracting text via OCR and then cleaning it with ChatGPT to provide ingredient information. 
+The model performed well with a mean Character Error Rate (CER) of 0.14, and even as low as 
+0.05 on plane surfaces. User testing with 27 participants resulted in high satisfaction (avg rating 
+4.37/5), bringing to fore its efficacy in conveying clear, contextual, and reference-supported 
+nutritional information. This research presents a new integration of OCR and generative AI for 
+real-time interpretation of food labels with obvious potential to facilitate dietary consciousness 
+and allergen control. 
+  
+
+[4] Delving Deep into NutriScan: Automated Nutrition Table Extraction and 
+
+Ingredient Recognition 
+ 
+In 2023 researchers investigated the issue of reading ingredient lists and nutrition tables on 
+packaged foods. They solved it by integrating a well-tuned EfficientDet model with PaddleOCR, 
+which would allow the system to locate the text regions and later read the content. A useful 
+addition is a user preference module that allows individuals to tailor the output to their own 
+requirements—for example, excluding particular allergens or monitoring sugar, salt, or fat 
+consumption. 
+
+
+
+The software is more than a number-extracting device: it calls out additives and allergens, reports 
+on proteins, sodium, and trans fats, and even calculates a Nutri-Score to provide an instant feeling 
+for overall health value. Training was done on 1,500 labeled packaging images, and testing using 
+COCO measures indicated that the system was reliable. To simplify the information, the authors 
+also linked additives to concise Wikipedia summaries. This added step simplifies results. 
+Consequently, the system becomes more convenient for individuals making everyday food-
+related choices 
+  
+
+[5] An Adjustable Deep Learning Model for Optical Character Verification on 
+Retail Food  Packaging 
+ 
+This article introduces an adaptive Optical Character Verification (OCV) system for food 
+packaging labels, specifically "use by" dates. To read labels correctly in any real-world setting, 
+the authors use a deep learning-based CNN approach with transfer learning and domain 
+adaptation. The system adapts pre-trained CNN features with k-means clustering and k-nearest 
+neighbor classification. This allows it to rectify and identify distorted or blurred text on various 
+datasets. Data augmentation techniques and hand annotations were used to help correct errors in 
+labeling, class imbalance, and small training sets. The system presented improved performance in 
+labeling error detection, which helps with food safety, cuts product recalls, and boosts automation 
+in the food supply chain. Its high compliance in all lighting and distortion conditions makes it an 
+ideal choice for industrial usage. 
+  
+
+[6] Allergen Detection in Food Ingredients using Computer Vision 
+ 
+This work completes the essential need for allergen recognition in food products, especially 
+among food allergic patients. The authors present an Android mobile application through Optical 
+Character Recognition (OCR) and Boyer-Moore string matching that recognizes allergens from 
+food package labels. In contrast to barcodes, this system scans hard-printed ingredient labels and 
+cross-references them with a designated allergen database extracted from AAFA. Certain 
+important steps in the procedure are cropping images, text extraction through Google Play 
+Services' OCR API, and string matching for technical and general allergen terms, such as 
+recognizing "lactalbumin" as milk. Testing under different lighting and packaging conditions 
+showed over 90% accuracy, proving the method to be reliable. The system provides a simple and 
+effective way to detect allergens, improving food safety and access for sensitive consumers. 
+  
+
+[7] Machine Learning Based Solution on Food Recognition and Nutrition Estimation 
+
+ 
+ The paper proposes a machine learning-based food recognition system for classifying food 
+products and approximating their nutritional content. A Convolutional Neural Network (CNN) is 
+used by the authors with a client-server model where food images are sent from a mobile client to 
+a server to process. The framework has three parts: a pre-trained CNN for classification of food, a 
+text module to estimate features (e.g., calorie quantity), and a processing unit in the back. With 
+extensive training on thousands of food image samples, the model is able to classify with high 
+accuracy, making it useful for accurate tracking of calories. The study brings to light the 
+
+
+
+advantage of this technology for weight loss and resultant health issues, particularly through 
+making food recording simpler and real-time commentary regarding diet for those trying to 
+manage their weight. 
+  
+
+[8] Automating Nutritional Claim Verification: The Role of OCR and Machine 
+
+Learning in Enhancing Food Label Transparency (ICICNIS-2024)  
+ 
+In their 2024 ICICNIS paper, Siddique Ibrahim et al. introduce an end-to-end system to 
+automatically check nutritional claims on food packaging based on OCR and machine learning 
+methods. The EasyOCR text recognition system is used with deep learning to capture ingredient 
+lists and label text from product images and match them to USDA nutritional guidelines. After 
+text extraction, the authors applied machine learning classifiers, mostly SVM and decision trees, 
+to identify whether claims like "organic," "natural," or "sugar-free" are supported by ingredient or 
+nutrient details. The SVM worked at around 89-90% accuracy for binary claim validation 
+(existence/non-existence of a specific claim), while the decision tree model worked at around 
+85% accuracy for more complicated multi-feature claims. These results show that their suggested 
+pipeline can successfully detect unsupported or false label claims. The paper overall illustrates 
+that the capability to automate claim checking based on OCR will significantly lessen manual 
+work and error in label checking, thereby promoting transparency and consumer confidence in 
+food labeling. This is seen as a significant step towards large-scale, automated nutritional claim 
+verification. 
+  
+ 
+ 
+
+[9] DeepAllergy: A Deep Learning Approach for Accurate and Rapid Food Allergen 
+Detection (ICACCS-2024) 
+ 
+ Vishal Aravinth and his co-authors suggested DeepAllergy, a deep learning system that is 
+designed to identify food allergens quickly and accurately, thus addressing health risks instigated 
+by food allergies. Three image classification models, all transfer learning-based, are compared 
+and tested within this paper: YOLOv8, Vision Transformer (ViT), and EfficientNet B4. The 
+models operate on 6,271 labeled images of Indian cuisine and an allergen database from Kaggle. 
+These models categorize food items and then detect potential allergens by translating the dishes 
+identified through images to established allergen profiles. Outcomes showed that EfficientNet B4 
+provided the highest classification accuracy at 92.28%, followed closely by YOLOv8 at 92.05%, 
+and ViT with the least at 52.04%. EfficientNet was chosen as a pragmatic solution due to its 
+convergent stability and huge validation performance. The authors also touch on developing the 
+system for real-time allergen detection, enabling integration into consumer-facing applications, 
+and providing more food safety through AI-based image recognition. 
+  
+
+[10] Recipe Recommendations for Toddlers Using Integrated Nutritional and 
+
+Ingredient Similarity Measures (JCSSE 2022) 
+ 
+
+
+
+Varsha S. Sutar et al. (2024) suggest a recommendation system particularly designed for the 
+nutritional requirements of toddlers so that it recommends recipes balancing dietary needs and 
+ingredient similarity. It considers two significant steps: Nutritional similarity-comparison of 
+nutrients such as carbohydrates, proteins, fats, vitamins, and minerals-and Ingredient similarity-
+detection of shared and compatible food ingredients. The onsystem offers an internet-based recipe 
+database that is collected from recipe stores on the internet. It is supplemented with nutritional 
+values collected from APIs like Edamam and Standardized Food Composition Tables. Applying 
+cosine similarity and content-based filtering, the system offers substitute recipes if some 
+ingredients are not procurable to the restaurant while remaining within the toddler dietary 
+guidelines. This approach offers more freedom for parents in planning meals while considering 
+nutritional adequacy, particularly for a fussy child, or one with mild dietary limitations. The 
+authors point out the importance of integrating nutritional science with algorithmic methods of 
+making recommendations in order to maximize toddler health outcomes. 
+  
+
+[11] Ingredient Prediction via Context Learning Network With Class-Adaptive 
+Asymmetric Loss (ICASSP -2023) 
+ 
+ In accordance with Xu et al. (2023), CLNet is proposed to improve ingredient prediction from 
+food images. The issue becomes challenging when a large number of ingredients co-occur and 
+when their frequency is not the same. Traditionally applied multi-label classification mode is 
+suffering from class imbalance, wherein frequently used ingredients are predicted more, and 
+sparse ones are omitted. CLNet chapters this through two streams of innovations: firstly (1) A 
+context feature enhancement module, by way of the attention mechanism, to learn both global and 
+local contextual relationships between food items; and secondly (2) Class Adapative Asymmetric 
+Loss (CAAL) that learns dynamically penalty weights for infrequent and frequent ingredients. 
+The resultant method with the VireoFood172 dataset generated mAP and F1-scores significantly 
+better than the baselines-models-ResNet-50 and ML-GCN with tremendous improvements in 
+predicting rare ingredients. These properties actually render CLNet very applicable to real-world 
+applications like recipe analysis, nutrition estimation, or food logging. 
+  
+
+[12] Ingredient-Guided Region Discovery and Relationship Modeling for Food 
+Category–Ingredient Prediction (ACM MM-2021) 
+ 
+ Based on Chen et al. (2021), a novel dual-task model for food category and ingredient prediction 
+from images is introduced that focuses on the interaction between visual regions and ingredient 
+meanings. The approach introduces Ingredient-Guided Region Discovery (IGRD), aiming to 
+identify visually pertinent regions in a food image for certain ingredients. The region guidance 
+enables enhanced ingredient detection, primarily if the ingredient is visually extremely faint or 
+tiny. At the same time, a Relationship Modeling Module (RMM) performs co-occurrence 
+modeling of ingredients and food categories to provide consistency for multi-label prediction. It is 
+trained on the VireoFood172 dataset, achieving tremendous incremental benefits on mean 
+Average Precision (mAP) over category and ingredient predictions compared to traditional CNN-
+based and graph-based models. The method points out how region-level attention must be 
+integrated with semantic relationship modeling to enhance food comprehension. 
+
+
+
+  
+
+[13] AI-Powered Ingredient Detector for Allergies (Khanna, Golabal, Sharma) 
+ 
+ This paper addresses a dire problem for individuals suffering from food allergies: not being able 
+to determine allergens from the product packaging ingredient labels. The authors propose an AI 
+pipeline that begins with Optical Character Recognition (OCR) to extract ingredient names from 
+food product packaging. The pulled information is then normalized, matched with a hand-curated 
+database of allergens, and also with a user's stored allergy profile. If any dangerous ingredients 
+are detected, the system provides a user-specific summary including the name of the allergen, 
+food, and its possible effect on health. Unlike simple image recognition tools like Google Lens, 
+the system is designed with allergy detection in mind with relevance and interpretability. One 
+main strength is personalizing the user and transparent output over reliance solely on black-box 
+models. Authors also highlight drawbacks of existing tools such as their inability to identify 
+allergens from hard or ambiguous ingredient codes. Lightweight and mobile-friendly processing 
+focus ensures relevance to actual consumer usage. Overall, the system makes a valuable 
+contribution to health-oriented AI applications by converting noisy text into meaningful, life-
+saving guidance for individuals with allergies. 
+  
+
+[14] AI-Powered Ingredient Detector for Allergies (Duplicate Copy / Reinforcement 
+
+Study) 
+ 
+The second paper appears to be a replicated version of the Khanna et al. work but with an 
+emphasis on the practical aspects of the design decisions made by them. It again outlines the 
+process of using OCR to extract text from images, followed by token normalization and 
+identifying common words with an allergen list. This version, in particular, highlights a point that 
+it is essential to keep the output simple and understandable by humans that goes beyond 
+"ingredient found" label by explaining the reason of the substance being harmful. Such 
+explanation helps by gaining user trust and enabling them to make further decisions. 
+The authors also emphasize that accuracy in OCR and preprocessing should be the focus rather 
+than deep predictive modeling since allergen identification is mainly a rule-based problem. They 
+come up with the argument that an open, editable system would be more suitable for sensitive 
+health areas than the complicated black-box algorithms. 
+Another main point of the work is that the authors have deliberately designed the process to be 
+compatible with phones, meaning that no special hardware is required apart from a phone camera. 
+To sum up, although this version of the paper lacks the novelty of experiments or datasets, it 
+reaffirms the same methodology and highlights the authors' long-term ambition of creating a 
+dependable, personalized allergy-detection assistant for everyday shopping. 
+ 
+ 
+  
+
+[15] Deep-Learning Allergen Identification via Food Image Classification (ICCI 
+2024) 
+ 
+
+
+
+ Present Allergens-Learning is an unconventional approach to identifying allergens in food by 
+analyzing images instead of reading text descriptions. The researchers have compiled 48 popular 
+Thai meals into a new dataset and train three deep convolutional neural networks: MobileNetV2, 
+ResNet-50V2, and EfficientNet-B0. Experiments have discovered that EfficientNet-B0 is the 
+leading performer with about 97% of accuracy which is a good candidate for mobile deployment, 
+as it is more efficient and less costly computationally. Such a system is a two-stage process: at the 
+first stage, the product is identified via the image and, at the second stage, the food is matched 
+with the list of potential allergens which are then compared to the user's allergy profile. This is 
+very convenient, for example, in a restaurant where no ingredient labels are present, and visual 
+recognition would be the only option. 
+The authors state the fact that image recognition systems only provide simple tags while their 
+system is designed to bring the user's attention to allergens that might interest them. They remark 
+on the great everyday usefulness of the combination of food classification and allergenic 
+ingredient domain expertise. In general, the work is a mapping of the latest CNN designs to 
+everyday diet safety, bridged by computer vision and personalized health tracking.  
+ 
+ 
+
+ 
+
+Or  
+
+ 
+
+ 
+
+A. OCR-Driven Food Label and Nutrition Extraction 
+
+Ibrahim et al. [1] introduced an end-to-end pipeline for nutritional claim verification using 
+EasyOCR and machine learning classifiers. Their system validated label claims such as “organic” or 
+“sugar-free” against USDA standards, achieving nearly 90% accuracy for binary verification tasks. 
+Unlike earlier OCR solutions, their emphasis was on regulatory compliance, offering a practical step 
+towards automated claim auditing. 
+
+Shah et al. [2] developed a more specialized framework focusing on nutrition table extraction using 
+an EfficientDet detector with PaddleOCR. Their system not only retrieved macronutrients but also 
+generated Nutri-Scores, giving consumers quick insights into product health value. With training on 
+1,500 annotated food packages, the model proved effective under real-world distortions. 
+
+Markavathi et al. [3] further extended OCR-based systems into mobile deployments with NutriScan, 
+which combines EfficientDet detection and PaddleOCR parsing. Their platform provides 
+personalized health alerts, highlighting its usability for diabetic and cardiovascular patients requiring 
+low-sugar or low-salt diets. 
+
+Similarly, Bhatlawande et al. [4] advanced OCR accuracy by leveraging Google Vision API with 
+MSER algorithms, achieving ~87.9% precision in ingredient text extraction. They highlighted the 
+shortcomings of barcode-only systems and proposed additive-aware categorization. 
+
+
+
+ 
+
+B. Machine Learning-Based Ingredient Categorization 
+
+Lodha et al. [5] proposed NutriScan, an AI/ML web platform that integrates OCR with a Random 
+Forest classifier. Their dataset of over 10,000 labeled ingredient entries enabled classification into 
+healthy, neutral, and harmful groups with 91% accuracy. A unique contribution was the 
+personalized allergen and restriction alerts, offering real-time dietary guidance. 
+
+Rosyadi et al. [6] presented GiziLens, which combined PaddleOCR with ChatGPT for text correction 
+and semantic enrichment. By reducing the Character Error Rate (CER) to as low as 0.05, their system 
+demonstrated the value of large language models in refining OCR outputs. 
+
+Xu et al. [7] proposed CLNet, which addressed ingredient prediction challenges in images with class 
+imbalance issues. By introducing Context Feature Enhancement and Class-Adaptive Asymmetric 
+Loss (CAAL), they outperformed conventional CNNs in predicting rare food ingredients. 
+
+Chen et al. [8] further emphasized region-ingredient interaction by designing Ingredient-Guided 
+Region Discovery (IGRD) and Relationship Modeling Modules. This dual-task framework improved 
+multi-label food recognition performance on the VireoFood172 dataset. 
+
+ 
+
+ 
+
+ 
+
+C. Allergen Detection Systems 
+
+Food allergen detection has become a focal point for consumer safety. Johan et al. [9] designed an 
+OCR-based Android app that applied Boyer-Moore string matching to detect allergens from 
+ingredient lists. With >90% accuracy under diverse lighting conditions, their system proved 
+lightweight and field-ready. 
+
+Aravinth et al. [10] presented DeepAllergy, which evaluated YOLOv8, Vision Transformer (ViT), 
+and EfficientNet-B4 models for allergen recognition in Indian foods. EfficientNet-B4 achieved 
+92.28% accuracy, confirming the robustness of transfer learning for allergen-sensitive food 
+recognition. 
+
+Khanna et al. [11] developed an AI-powered allergen detector that linked OCR outputs with 
+personalized allergy profiles. Unlike prior black-box systems, their model emphasized explainability 
+and mobile-friendliness, delivering contextualized alerts to users. 
+
+Complementing this, ICCI 2024 research [12] proposed allergen identification from food images 
+instead of text labels, training CNNs like MobileNetV2, ResNet-50V2, and EfficientNet-B0. The 
+model achieved 97% accuracy, showing promise for restaurant or non-packaged food scenarios. 
+
+ 
+
+D. Religion-Specific Food Classification (Halal / Non-Halal) 
+
+
+
+OCR-based ingredient detection has also been applied to halal assurance. The “Latext” framework 
+[13] scanned ingredient labels with mobile OCR and verified them against centralized certification 
+databases. While widely accessible, it faced font misread issues that required improved 
+preprocessing. 
+
+Fadhilah et al. [14] expanded this domain by applying CNNs to detect non-halal ingredients in 
+packaging text. Though single-character detection reached 98%, whole-word detection accuracy 
+dropped to ~50% due to segmentation errors, underscoring the difficulty of real-world deployment. 
+
+ 
+
+E. Food Recognition and Health-Oriented Applications 
+
+Shen et al. [15] applied CNN-based classification to food photographs, linking recognition to calorie 
+estimation. This model aids in obesity management and weight tracking, offering a non-invasive 
+approach to nutrition monitoring. 
+
+Sutar et al. [16] designed a toddler-focused recipe recommendation engine, which combined 
+ingredient similarity and nutritional adequacy measures. Their framework highlighted the 
+intersection of dietary science and recommender systems. 
+
+ 
+
+ 
+
+F. Food Supply Chain and Traceability 
+
+Beyond consumer applications, safety also depends on supply chain integrity. ICCMC 2022 [17] 
+introduced a blockchain-enabled traceability system with EPC tagging and KNN anomaly 
+detection. This ensured tamper-proof tracking of food items from source to consumer, complementing 
+OCR-based consumer-facing solutions. 
+
+ 
+
+3.PROBLEM STATEMENT 
+Consumers often trust marketing claims without fully grasping the true nutritional value of food products. 
+Current applications offer limited insights and only focus on basic nutrition extraction. They do not include 
+features like claim validation, personalized health alerts, predictive simulations, and alternative 
+recommendations. This results in a gap in health knowledge, putting consumers at risk of making unhealthy 
+choices. Therefore, the problem this research addresses is: 
+“How can AI, ML, OCR, and NLP be brought together in a framework that not only extracts and classifies 
+food label data but also validates claims, gives personalized health insights, and encourages healthier 
+alternatives?” 
+
+ 
+
+SYSTEM MODEL 
+
+The proposed system uses a multi-layered structure that combines OCR, AI, and ML modules for real-time 
+food label analysis. The workflow starts with capturing images of packaged food labels using a smartphone 
+camera. The OCR module identifies and extracts ingredient lists and nutritional tables. Object detection 
+
+
+
+algorithms help accurately segment areas with a lot of text. After processing the text, the ML module 
+classifies each ingredient as healthy, neutral, or harmful based on datasets aligned with global regulatory 
+guidelines (FSSAI, FDA, EFSA). 
+
+At the same time, the system compares nutritional values by checking macronutrients (sugar, fat, sodium) 
+against recommended dietary limits. It generates a Nutri-Score from A to E. An NLP-based contradiction 
+checker verifies product claims to spot inconsistencies, like “sugar-free” labels that still include sugar 
+substitutes. Finally, personalized risk analysis models predict long-term health effects based on user history 
+and suggest healthier options through integrated APIs 
+
+ 
+
+ 
+
+4. Proposed Methodology 
+[Insert your system architecture, tools, frameworks, dataset sources, OCR logic, classification logic, 
+personalized recommendation system, etc.] 
+
+Our approach draws methodological insights from prior implementations. Lodha et al. [1] used a 
+Random Forest classifier over curated ingredient datasets, offering a strong precedent for rule-based 
+classification. Bhatlawande et al. [2] successfully employed Google's Vision API and MSER 
+algorithm to extract OCR features from noisy labels. Rosyadi et al. [3] validated the effectiveness of 
+PaddleOCR for text detection in complex packaging conditions, and uniquely coupled it with 
+ChatGPT for dynamic query responses. Shah et al. [4] emphasized user-centered analysis by 
+integrating EfficientDet for region detection and adding Nutri-Score computation, reinforcing the need 
+for flexible personalization in food label evaluation systems. 
+
+ 
+
+Or  
+
+This paper adopts a mixed-methods approach, combining a structured literature review with 
+comparative technical analysis. The methodology is organized into four stages: 
+
+A. Data Collection 
+Ingredient lists, nutritional panels, and food packaging images were considered as the primary data 
+sources. These images typically contain multi-font, multi-size texts with complex layouts. 
+Representative datasets referenced in prior works include Food-101, Open Food Facts, and 
+proprietary retail collections. 
+
+B. OCR Pipeline Design 
+The baseline OCR workflow involves several stages: 
+
+1. Preprocessing: Noise reduction, contrast adjustment, and geometric correction for curved or 
+skewed surfaces. 
+
+2. Text Detection: Region identification using models like EAST, EfficientDet, or CRAFT. 
+
+3. Text Recognition: Character-level decoding via CRNN, Tesseract, or PaddleOCR. 
+
+
+
+4. Post-Processing: Error correction with dictionaries, contextual spell-checkers, or semantic 
+LLM refiners. 
+
+Mathematically, the OCR system minimizes the Character Error Rate (CER): 
+
+CER= S+D+I/N 
+
+where S = substitutions, D = deletions, I = insertions, and N = total characters. 
+
+C. Machine Learning & Classification 
+Extracted ingredients undergo semantic mapping using embedding techniques such as Word2Vec or 
+BERT. Classification models (Random Forest, SVM, or CNN-based classifiers) are employed to 
+categorize ingredients into healthy, neutral, or harmful. Furthermore, allergen detection is performed 
+by rule-based matching enriched with ontology-driven approaches. 
+
+D. Evaluation Metrics 
+System performance is measured using a combination of metrics: 
+
+ OCR accuracy (CER, Word Error Rate) 
+
+ Classification accuracy (Precision, Recall, F1-score) 
+
+ Claim Verification Accuracy (ratio of correctly flagged contradictions to total claims) 
+
+Comparisons across OCR frameworks and ML approaches are summarized in tabular IEEE format 
+(see Table I in Section IV). 
+
+ 
+
+5. Results and Evaluation 
+
+The review of existing research reveals significant progress in OCR-driven food label 
+analysis, machine learning-based ingredient categorization, and allergen detection. 
+However, when critically compared, several strengths and limitations become evident, 
+pointing to the scope of NutriLabel Analyzer as a next-generation system. 
+
+ 
+
+A. OCR Accuracy and Robustness 
+
+OCR remains the backbone of all label analysis systems. Early frameworks such as 
+Tesseract achieved moderate accuracy under controlled conditions but struggled with 
+distorted fonts and multilingual labels. Works like Bhatlawande et al. [4] demonstrated 
+the advantages of Google Vision API combined with MSER, achieving 87.88% 
+accuracy on real-world packaging. Meanwhile, Shah et al. [2] and Markavathi et al. [3] 
+proved that EfficientDet with PaddleOCR can outperform conventional OCR models, 
+particularly under low-light and curved-surface conditions. 
+
+
+
+Table I (to be inserted) will present a comparative summary of Tesseract, PaddleOCR, 
+EasyOCR, and Google Vision API with respect to accuracy, latency, and suitability for 
+mobile deployment. Preliminary evidence suggests that hybrid OCR pipelines, 
+especially when combined with semantic post-correction (e.g., ChatGPT in GiziLens [6]), 
+significantly reduce error rates. 
+
+ 
+
+B. Ingredient Categorization and Claim Verification 
+
+The integration of OCR with ML models enables ingredient categorization beyond 
+simple extraction. Lodha et al. [5] reported 91% accuracy in classifying ingredients as 
+healthy, neutral, or harmful using Random Forests. Similarly, Rosyadi et al. [6] enhanced 
+classification reliability through spelling correction and contextual enrichment. 
+
+In contrast, Ibrahim et al. [1] focused on claim verification, aligning extracted data with 
+USDA standards. Their SVM classifier achieved ~90% accuracy in verifying nutritional 
+claims, providing the first step toward automated regulatory compliance. Yet, claim 
+verification remains underexplored, leaving room for systems like NutriLabel Analyzer 
+to build specialized NLP contradiction detection pipelines. 
+
+ 
+
+C. Allergen Detection and Personalization 
+
+Food allergen detection is one of the most impactful applications. Johan and Rizal [9] 
+presented an OCR + string-matching approach with >90% allergen detection accuracy, 
+while Aravinth et al. [10] demonstrated deep learning’s superiority through EfficientNet-
+B4, which achieved 92.28% accuracy in allergen recognition from food images. 
+
+Khanna et al. [11] distinguished their system by emphasizing personalized allergen 
+alerts, matching ingredients with a user’s stored allergy profile. Unlike black-box CNNs, 
+their pipeline emphasized explainability—an essential feature for consumer trust. 
+Systems such as ICCI 2024 [12] that applied CNNs to food photographs extended 
+allergen detection to restaurant settings, where ingredient labels are absent. 
+
+Taken together, these studies underscore the need for personalized, context-aware 
+allergen detection, which NutriLabel Analyzer addresses through user-specific health 
+filters and multilingual alerts. 
+
+ 
+
+D. Specialized Applications (Halal/Non-Halal, Child-Specific, Supply 
+Chain) 
+
+
+
+Certain works have explored niche domains. The “Latext” system [13] verified halal 
+certification by linking OCR results with online certification databases, while Fadhilah et 
+al. [14] attempted non-halal ingredient recognition via CNN character segmentation. Both 
+highlighted the complexity of religion-sensitive food assurance, though real-world 
+accuracy suffered due to segmentation challenges. 
+
+Sutar et al. [16] shifted focus to children, proposing toddler-specific recipe 
+recommendation engines. This idea of age-centric personalization aligns with 
+NutriLabel Analyzer’s child-focused food safety filter, which flags additives unsuitable 
+for younger consumers. 
+
+Finally, ICCMC 2022 [17] demonstrated the importance of supply chain transparency 
+by integrating blockchain and EPC tags with KNN anomaly detection. While such 
+frameworks operate upstream, they complement consumer-facing solutions like 
+NutriLabel Analyzer by ensuring end-to-end food safety. 
+
+ 
+
+E. Comparative Insights 
+
+From this comparative analysis, three insights emerge: 
+
+1. OCR + ML outperform standalone OCR: Systems that combine text 
+recognition with semantic enrichment (e.g., Rosyadi [6]) consistently outperform 
+those relying on OCR alone. 
+
+2. Personalization is key: Allergen-specific frameworks (Khanna [11]) and age-
+specific systems (Sutar [16]) show that user-centricity drives higher adoption and 
+trust. 
+
+3. Forecasting and contradiction detection remain gaps: While existing studies 
+achieve high accuracy in text recognition and categorization, very few attempt 
+long-term health forecasting or contradiction detection between claims and 
+ingredients. These are precisely the domains where NutriLabel Analyzer 
+differentiates itself. 
+
+ 
+
+F. Limitations in Current Literature 
+
+Despite advancements, several challenges persist: 
+
+ Dataset limitations: Many models are trained on small or domain-specific 
+datasets, reducing generalizability. 
+
+ Environmental variability: OCR struggles with lighting, reflections, and 
+multilingual text. 
+
+ Lack of holistic integration: Most systems focus on one problem (OCR, allergen 
+detection, or recommendation), but rarely integrate all into a single pipeline. 
+
+
+
+ Ethical considerations: Few works address privacy and bias, which are critical 
+when processing personal health profiles. 
+
+6. Discussion 
+While existing systems [1]–[4] demonstrate high accuracy and user value, challenges remain in 
+generalizing across diverse packaging styles, languages, and unlisted additives. Lodha et al. [1] and 
+Bhatlawande et al. [2] rely heavily on curated ingredient lists, which may not adapt well to new or 
+regional additives. Rosyadi et al. [3] showed promise in using generative AI to overcome this 
+limitation, but their model remains dependent on OCR accuracy. Shah et al. [4] offered an integrated 
+object detection and nutrition scoring framework, yet struggled with real-time processing demands. 
+Future systems may benefit from combining lightweight edge-AI models with scalable cloud-based 
+interpretation for multilingual, real-time dietary assistance. 
+
+ 
+
+EXPERIMENT 
+
+The experimental assessment of the suggested framework was conducted with real-world images of food 
+labels and user testing via the mobile app. A collection of packaged items with diverse print quality, fonts, 
+and lighting conditions was utilized to analyze OCR performance. All these differences notwithstanding, 
+the system was able to achieve a mean accuracy of approximately 85% in the extraction of both ingredient 
+lists and nutrition tables, reflecting robustness in real-world settings. 
+Machine learning models were validated on scanned product data and were able to classify ingredients as 
+healthy, neutral, or harmful and did so according to regulatory frameworks like FSSAI and FDA. 
+Nutritional content such as sugar, sodium, and fat were assessed and the system produced uniform Nutri-
+Scores and Health Impact Scores that were checked against established dietary principles. 
+The claim validation module developed using NLP was applied to food items labeled "sugar-free" and "low 
+fat." The system indicated contradiction between claims and contents in several instances, demonstrating its 
+potential for identifying misleading information. Subsequent pilot user testing, with limited participants, 
+verified that the application was easily usable. Participants indicated that the Nutri-Score, classification of 
+ingredients, and suggestions were understandable and helpful, demonstrating the effectiveness of the 
+system in enhancing consumer health awareness. 
+ 
+
+7. Conclusion and Future Work 
+
+Food label analysis is no longer a peripheral research area but a pressing necessity in the 
+era of globalized food supply chains and rising health concerns. The literature reviewed 
+in this paper highlights significant progress in OCR pipelines, machine learning–based 
+ingredient classification, allergen detection, and nutrition-aware recommender 
+systems. Collectively, these works demonstrate the feasibility of automating claim 
+verification and personalized dietary guidance. 
+
+However, the comparative discussion reveals persistent gaps. Existing systems largely 
+emphasize either ingredient extraction or categorization, with limited focus on 
+contradiction detection, personalized forecasting, or integration of multimodal 
+
+
+
+health data. Moreover, dataset biases, environmental variability, and lack of 
+explainability restrict real-world applicability. 
+
+The proposed NutriLabel Analyzer addresses these gaps by integrating OCR, NLP-
+based contradiction verification, personalized allergen alerts, age-based filters, 
+multilingual conversational support, and predictive health forecasting into a unified 
+mobile platform. By bridging the divide between food science, artificial intelligence, 
+and consumer health, it offers an end-to-end framework for informed food choices. 
+
+Looking ahead, future research can expand in three key directions: 
+
+1. Multimodal Integration: Combining text, image, and sensor-based data (e.g., 
+IoT-enabled food tracking) to improve robustness. 
+
+2. Large-Scale Datasets: Establishing open, standardized datasets of labeled food 
+packaging across languages and regions. 
+
+3. Ethics and Trust: Ensuring transparency, explainability, and privacy 
+preservation to build user confidence, especially in sensitive domains such as 
+allergen detection and halal assurance. 
+
+In summary, while current solutions illuminate the path, the next generation of food label 
+analyzers must be holistic, personalized, and predictive—qualities embodied by the 
+NutriLabel Analyzer vision. 
+
+8.References 
+[1] S. Lodha, S. Shinde, A. Anand, P. Dalvi, and J. Nalavade, "NutriScan: AI-Based Ingredient Detection 
+and Evaluation," Int. J. Eng. Res. Technol. (IJERT), vol. 14, no. 5, May 2025. [Online]. Available: 
+https://www.ijert.org 
+  
+[2] S. Bhatlawande, S. Shilaskar, and A. Surana, “A smart scanner system for ingredient categorization and 
+identification of nutritional composition in packaged food items,” J. Integr. Sci. Technol., vol. 13, no. 1, pp. 
+1008, 2025. DOI: 10.62110/sciencein.jist.2025.v13.1008 
+  
+[3] A. W. Rosyadi, S. Ma’shumah, M. Q. Zaman, and M. R. Fajar, “Ingredients Identification Through 
+Label Scanning Using PaddleOCR and ChatGPT for Information Retrieval,” J. RESTI (Rekayasa Sistem 
+dan Teknologi Informasi), vol. 8, no. 6, pp. 758–767, Dec. 2024. DOI: 10.29207/resti.v8i6.6119 
+  
+[4] Y. A. Shah, N. Jariwala, B. Kachhia, and P. Shah, “Delving Deep into NutriScan: Automated Nutrition 
+Table Extraction and Ingredient Recognition,” Int. J. Res. Appl. Sci. Eng. Technol. (IJRASET), vol. 11, no. 
+11, Nov. 2023. DOI: 10.22214/ijraset.2023.56852  
+  
+[5]  De Sousa Ribeiro, F., Swainson, M., Leontidis, G., et al. (2021). An Adaptable Deep Learning System 
+for Optical Character Verification in Retail Food Packaging. Preprint. University of Lincoln.  
+  
+[6] Johan, E. B., & Rizal, A. (2021). Allergen Recognition in Food Ingredients with Computer Vision. 
+Ultima Computing: Jurnal Sistem Komputer, 13(2), 44–48. ISSN: 2355-3286  
+  
+
+
+
+[7] Shen, Z., Shehzad, A., Chen, S., Sun, H., & Liu, J. (2020). Machine Learning Based Approach on Food 
+Recognition and Nutrition Estimation. Procedia Computer Science, 174, 448–453. 
+https://doi.org/10.1016/j.procs.2020.06.113  
+  
+[8] S. I. S. P., M. A. M. S. A. I. S., and K. R. N., "Automating Nutritional Claim Verification: The Role of 
+OCR and Machine Learning in Enhancing Food Label Transparency," 2024 IEEE International Conference 
+on Intelligent Computing, Information and Control Systems (ICICNIS), Secunderabad, India, 2024, pp. 
+212–220. DOI: 10.1109/ICICNIS64247.2024.10823177.  
+  
+[9] V. Aravinth, R. V. Santhosh, K. S. Keerthana, R. R. Chandrasekar, and S. R., "DeepAllergy: A Deep 
+Learning Approach for Accurate and Rapid Food Allergen Detection," 2024 IEEE International 
+Conference on Advanced Computing & Communication Systems (ICACCS), Coimbatore, India, 2024, pp. 
+1–8. DOI: 10.1109/ICACCS60874.2024.10717042  
+  
+[10] V. S. Sutar, M. S. Jagdale, and P. S. Patil, "Recipe Recommendations for Toddlers Using Integrated 
+Nutritional and Ingredient Similarity Measures," 2024 IEEE International Conference on Advanced 
+Computing & Communication Systems (ICACCS), Coimbatore, India, 2024, pp. 1–6. DOI: 
+10.1109/JCSSE54890.2022.9836248  
+  
+[11] Z. Xu, C. Ding, and D. Tao, "Ingredient Prediction via Context Learning Network With Class-
+Adaptive Asymmetric Loss," 2023 IEEE International Conference on Acoustics, Speech and Signal 
+Processing (ICASSP), Rhodes Island, Greece, 2023, pp. 1–5. DOI: 10.1109/TIP.2023.3318958  
+  
+[12] J. Chen, L. Zhang, and Y. Li, "Ingredient-Guided Region Discovery and Relationship Modeling for 
+Food Category–Ingredient Prediction," Proceedings of the 29th ACM International Conference on 
+Multimedia (ACM MM 2021), Chengdu, China, 2021, pp. 1–10. DOI: 10.1109/TIP.2022.3193763  
+  
+[13] Khanna, K.; Golabal, S.; Sharma, V. “AI-Powered Ingredient Detector for Allergies.” (manuscript in 
+your collection). Core idea: OCR + user-profile allergen matching; mobile-oriented pipeline. 
+  
+[14] Khanna, K., Golabal, S., & Sharma, V. AI-Powered Ingredient Detector for Allergies (Duplicate 
+Copy). (reinforcement study).  
+  
+[15] [ICCI 2024] “Deep-Learning Allergen Identification via Food Image Classification (MobileNetV2 / 
+ResNet-50V2 / EfficientNet-B0; 48 Thai dishes; best ≈97%).” IEEE International Conference on 
+Cybernetics and Innovations, 2024. (Title reconstructed from file content; uses EfficientNet-B0 for top 
+accuracy and dish→allergen mapping.)
