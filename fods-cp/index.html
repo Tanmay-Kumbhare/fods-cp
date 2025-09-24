@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>K-gram Explorer</title>
+  <style>
+    :root{--bg:#f6f8fb;--card:#ffffff;--accent:#4f46e5;--muted:#6b7280}
+    body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); margin:0; padding:32px; color:#111827}
+    .container{max-width:1000px;margin:0 auto}
+    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+    h1{margin:0;font-size:20px}
+    .card{background:var(--card);border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);padding:18px;margin-bottom:16px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
+    label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+    textarea{width:100%;min-height:200px;border-radius:8px;border:1px solid #e6e9ee;padding:12px;font-size:14px;resize:vertical}
+    input[type=file]{display:block}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    button{background:var(--accent);color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(79,70,229,0.12)}
+    .small{font-size:13px;padding:6px 10px}
+    .muted{color:var(--muted);font-size:13px}
+    .stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .stat{background:#f8fafc;padding:10px;border-radius:8px;font-size:13px}
+    ul.list{max-height:320px;overflow:auto;padding-left:18px}
+    .footer{margin-top:10px;color:var(--muted);font-size:13px}
+    input[type=number]{width:80px;padding:8px;border-radius:8px;border:1px solid #e6e9ee}
+    .right-col{display:flex;flex-direction:column;gap:12px}
+    .kgram-preview{font-family:monospace;background:#0f172a0a;padding:10px;border-radius:8px;white-space:pre-wrap;max-height:300px;overflow:auto}
+    .top-controls{display:flex;gap:8px;align-items:center}
+    @media (max-width:880px){.grid{grid-template-columns:1fr;}.right-col{order:2}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>K‑gram Explorer — frontend for your C tool</h1>
+      <div style="margin-left:auto;" class="muted">Paste or upload a file, load stopwords, pick k and explore</div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <label for="fileInput">Upload text file (or paste below)</label>
+          <input id="fileInput" type="file" accept=".txt" />
+          <div style="height:8px"></div>
+
+          <label for="stopInput">Upload stopwords file (one word per line) — optional</label>
+          <input id="stopInput" type="file" accept=".txt" />
+
+          <div style="height:12px"></div>
+
+          <label for="textArea">Text area</label>
+          <textarea id="textArea" placeholder="Paste your document here or upload a text file"></textarea>
+
+          <div class="controls" style="margin-top:12px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <label class="muted">k-value</label>
+              <input id="kInput" type="number" value="3" min="1" />
+            </div>
+
+            <button id="preprocessBtn" class="small">Preprocess</button>
+            <button id="generateBtn" class="small">Generate k-grams</button>
+            <button id="exportTokensBtn" class="small ghost">Export tokens</button>
+            <button id="exportKgramsBtn" class="small ghost">Export k-grams</button>
+          </div>
+
+          <div class="stats" id="statsArea" style="margin-top:12px"></div>
+
+          <div class="footer">Preprocessing: lowercasing, remove punctuation & numbers (keeps apostrophes), remove stopwords if provided.</div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Token list</h3>
+          <div id="tokensContainer" class="kgram-preview muted">No tokens yet. Click <strong>Preprocess</strong>.</div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="card">
+          <h3 style="margin-top:0">K‑gram preview</h3>
+          <div id="kgramInfo" class="muted">No k-grams yet. Click <strong>Generate k-grams</strong>.</div>
+          <div style="height:8px"></div>
+          <div id="kgramsContainer" class="kgram-preview"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Top k‑grams (by frequency)</h3>
+          <ol id="topKgrams" class="list muted"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Utilities: preprocessing rules should match the C version
+function toLowercase(s){return s.toLowerCase();}
+function removePunctAndNumbersKeepApos(s){
+  // keep letters and apostrophes, remove other chars
+  return s.replace(/[^a-zA-Z'\s]+/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// Global state
+const state = {
+  text: '',
+  tokens: [],
+  stopwords: new Set(),
+  kgrams: [],
+  kgramCounts: new Map()
+};
+
+// DOM refs
+const fileInput = document.getElementById('fileInput');
+const stopInput = document.getElementById('stopInput');
+const textArea = document.getElementById('textArea');
+const preprocessBtn = document.getElementById('preprocessBtn');
+const generateBtn = document.getElementById('generateBtn');
+const tokensContainer = document.getElementById('tokensContainer');
+const kgramsContainer = document.getElementById('kgramsContainer');
+const kInput = document.getElementById('kInput');
+const statsArea = document.getElementById('statsArea');
+const topKgrams = document.getElementById('topKgrams');
+const kgramInfo = document.getElementById('kgramInfo');
+const exportTokensBtn = document.getElementById('exportTokensBtn');
+const exportKgramsBtn = document.getElementById('exportKgramsBtn');
+
+fileInput.addEventListener('change', async (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const txt = await f.text();
+  textArea.value = txt;
+});
+
+stopInput.addEventListener('change', async (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const txt = await f.text();
+  const lines = txt.split(/\r?\n/).map(l=>l.trim().toLowerCase()).filter(Boolean);
+  state.stopwords = new Set(lines);
+  showToast(`Loaded ${state.stopwords.size} stopwords`);
+});
+
+function showToast(msg){
+  // tiny in-page notice
+  statsArea.innerHTML = `<div class="stat">${escapeHtml(msg)}</div>`;
+}
+
+function escapeHtml(s){return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+preprocessBtn.addEventListener('click', ()=>{
+  state.text = textArea.value || '';
+  // tokenization: whitespace split as in C
+  let rawTokens = state.text.split(/\s+/).filter(Boolean);
+  const processed = [];
+  for(let t of rawTokens){
+    t = toLowercase(t);
+    t = removePunctAndNumbersKeepApos(t);
+    if(t.length === 0) continue;
+    if(state.stopwords.has(t)) continue;
+    processed.push(t);
+  }
+  state.tokens = processed;
+  tokensContainer.textContent = processed.join(' ');
+  showStats();
+});
+
+function showStats(){
+  const tokenCount = state.tokens.length;
+  statsArea.innerHTML = '';
+  const pieces = [
+    createStat('Tokens', tokenCount),
+    createStat('k (current)', kInput.value)
+  ];
+  pieces.forEach(p=>statsArea.appendChild(p));
+}
+
+function createStat(title,value){
+  const d = document.createElement('div'); d.className='stat'; d.innerHTML = `<strong>${title}:</strong> ${value}`; return d;
+}
+
+generateBtn.addEventListener('click', ()=>{
+  const k = parseInt(kInput.value) || 1;
+  if(k <= 0){ alert('k must be >= 1'); return; }
+  if(k > state.tokens.length){ alert(`k (${k}) is larger than token count (${state.tokens.length})`); return; }
+  state.kgrams = [];
+  state.kgramCounts = new Map();
+  for(let i=0;i<=state.tokens.length - k;i++){
+    const parts = state.tokens.slice(i, i+k);
+    const kg = parts.join(' ');
+    state.kgrams.push(kg);
+    state.kgramCounts.set(kg, (state.kgramCounts.get(kg)||0)+1);
+  }
+  renderKgrams();
+});
+
+function renderKgrams(){
+  kgramsContainer.textContent = state.kgrams.slice(0,200).join('\n');
+  kgramInfo.textContent = `K-value: ${kInput.value} — Total k-grams: ${state.kgrams.length} — Unique: ${state.kgramCounts.size}`;
+
+  // show top 20
+  const arr = Array.from(state.kgramCounts.entries());
+  arr.sort((a,b)=>b[1]-a[1]);
+  topKgrams.innerHTML = '';
+  for(let i=0;i<Math.min(50,arr.length);i++){
+    const li = document.createElement('li'); li.textContent = `${arr[i][0]} (count: ${arr[i][1]})`; topKgrams.appendChild(li);
+  }
+}
+
+exportTokensBtn.addEventListener('click', ()=>{
+  if(state.tokens.length===0){ alert('No tokens to export — please preprocess first'); return; }
+  const blob = new Blob([state.tokens.join('\n')], {type:'text/plain'});
+  downloadBlob(blob, 'processed_tokens.txt');
+});
+
+exportKgramsBtn.addEventListener('click', ()=>{
+  if(state.kgramCounts.size===0){ alert('No k-grams to export — please generate first'); return; }
+  let header = `K-value: ${kInput.value}\nTotal k-grams: ${state.kgrams.length}\nUnique k-grams: ${state.kgramCounts.size}\n\n`;
+  const lines = [header];
+  for(const [kgram,count] of state.kgramCounts){ lines.push(`${kgram} (count: ${count})`); }
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  downloadBlob(blob, 'kgrams_output.txt');
+});
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+// small nicety: preserve paste into text area
+textArea.addEventListener('input', ()=>{ /* no-op for now */ });
+
+// Initialize tiny demo default
+showStats();
+</script>
+</body>
+</html>
